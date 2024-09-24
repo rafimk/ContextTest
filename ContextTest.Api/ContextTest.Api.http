@@ -1,0 +1,6 @@
+@ContextTest.Api_HostAddress = http://localhost:5219
+
+GET {{ContextTest.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
