@@ -1,11 +1,13 @@
 using ContextTest.Api.Contexts;
 using ContextTest.Api.Contexts.Accessors;
+using ContextTest.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddContexts()
         .AddHttpClient("MyClient")
         .AddContextHandler();
+builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -42,10 +44,11 @@ app.MapGet("/weatherforecast", (IContextProvider contextProvider, IContextAccess
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-app.MapGet("/GetForecast", (IContextProvider contextProvider, IContextAccessor contextAccessor) =>
+app.MapGet("/GetForecast", (IContextProvider contextProvider, IContextAccessor contextAccessor, ITestService testService) =>
 {
     var test = contextProvider.Current("user2");
     var corelationId = contextAccessor.Context?.CorrelationId;
+    var serviceCorelationId = testService.GetCorrelationId();
     var user = contextAccessor.Context?.UserId;
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
