@@ -26,7 +26,7 @@ var summaries = new[]
 app.UseContexts();
 app.MapGet("/weatherforecast", (IContextProvider contextProvider, IContextAccessor contextAccessor) =>
 {
-    var test = contextProvider.Current("rafi");
+    var test = contextProvider.Current("user1");
     var corelationId = contextAccessor.Context?.CorrelationId;
     var user = contextAccessor.Context?.UserId;
     var forecast = Enumerable.Range(1, 5).Select(index =>
@@ -40,6 +40,24 @@ app.MapGet("/weatherforecast", (IContextProvider contextProvider, IContextAccess
     return forecast;
 })
 .WithName("GetWeatherForecast")
+.WithOpenApi();
+
+app.MapGet("/GetForecast", (IContextProvider contextProvider, IContextAccessor contextAccessor) =>
+{
+    var test = contextProvider.Current("user2");
+    var corelationId = contextAccessor.Context?.CorrelationId;
+    var user = contextAccessor.Context?.UserId;
+    var forecast = Enumerable.Range(1, 5).Select(index =>
+        new WeatherForecast
+        (
+            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            Random.Shared.Next(-20, 55),
+            summaries[Random.Shared.Next(summaries.Length)]
+        ))
+        .ToArray();
+    return forecast;
+})
+.WithName("GetForecast")
 .WithOpenApi();
 
 app.Run();
